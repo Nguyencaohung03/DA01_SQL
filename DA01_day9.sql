@@ -17,10 +17,13 @@ from Triangle
 --ex3
 
 
-
 --ex4
-
-
+SELECT name 
+FROM customer         
+WHERE referee_id is NULL OR referee_id <> 2
+  
+    ---câu này cắc c làm đáp án luôn ạ? em vào link đã có đáp án r
+  
 -ex5
 select survived,
 Count(case
