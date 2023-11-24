@@ -61,6 +61,38 @@ where b.liked_date is NULL
 order by page_id 
 
 
+-----MID COURSE TEST
+--Q1
+select DISTINCT(replacement_cost)
+from film
+order by replacement_cost
+--Q2
+select
+Count(case 
+  when replacement_cost between 9.99 and 19.99 then 'low' 
+end) as low,
+Count(case
+  when replacement_cost between 20.00 and 24.99 then 'medium'
+end)as medium,
+Count(case
+  when replacement_cost between 25.00 and 29.99 then 'high'	
+end)as high
+from film
+group by case 
+  when replacement_cost between 9.99 and 19.99 then 'low' 
+  when replacement_cost between 20.00 and 24.99 then 'medium'
+  when replacement_cost between 25.00 and 29.99 then 'high'	
+end
+--Q3
+select a.title, a.length, b.category_id, c.name
+from film as a
+Join film_category as b on a.film_id=b.film_id
+join category as c on b.category_id=c.category_id
+where c.name = 'Drama' or c.name= 'Sports'
+order by a.length DESC
+
+-----continue (em sẽ cập nhật vào ngày mai ạ)
+
 
 
 
