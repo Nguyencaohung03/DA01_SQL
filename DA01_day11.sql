@@ -90,8 +90,21 @@ Join film_category as b on a.film_id=b.film_id
 join category as c on b.category_id=c.category_id
 where c.name = 'Drama' or c.name= 'Sports'
 order by a.length DESC
+--Q4
+select a.category_id, Count(b.title), c.name
+from film_category as a
+join film as b on a.film_id=b.film_id
+join category as c on a.category_id=c.category_id
+group by a.category_id,c.name
+order by Count(b.title)DESC
+--Q5
+select a.actor_id, a.first_name, a.last_name, Count(b.film_id)
+from actor as a
+join film_actor as b on a.actor_id=b.actor_id
+group by a.actor_id
+order by Count(b.film_id) DESC
+--Q6
 
------continue (em sẽ cập nhật vào ngày mai ạ)
 
 
 
