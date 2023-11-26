@@ -105,6 +105,22 @@ group by a.actor_id
 order by Count(b.film_id) DESC
 --Q6
 
+--Q7
+select d.city, Sum(a.amount)
+from payment as a
+join customer as b on a.customer_id=b.Customer_id
+join address as c on b.address_id=c.address_id
+join city as d on c.city_id=d.city_id
+group by d.city
+order by Sum(a.amount) DESC
+--Q8
+select d.city, Sum(a.amount)
+from payment as a
+join customer as b on a.customer_id=b.Customer_id
+join address as c on b.address_id=c.address_id
+join city as d on c.city_id=d.city_id
+group by d.city
+order by Sum(a.amount) (DESC)
 
 
 
