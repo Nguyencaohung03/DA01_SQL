@@ -85,6 +85,7 @@ when month_id in (10,11,12)  then 4
 end
 )
 --6.Hãy tìm outlier (nếu có) cho cột QUANTITYORDERED và hãy chọn cách xử lý cho bản ghi đó (2 cách) ( Không chạy câu lệnh trước khi bài được review)
+--cách 1:
 With twt_outlier as
 (
 Select Q1-1.5*IQR as min_value,
@@ -101,7 +102,32 @@ Select * from sales_dataset_rfm_prj
 where quantityordered < (select min_value from twt_outlier)
 or quantityordered > (select max_value from twt_outlier)
 
+--cách 2:
+with cte as
+(
+select orderdate,
+quantityordered,
+(select avg(quantityordered)
+from sales_dataset_rfm_prj)as avg,
+(select stddev(quantityordered)
+from sales_dataset_rfm_prj)as sttdev
+from sales_dataset_rfm_prj	
+),
+twt_outlier as
+(
+select orderdate, quantityordered,
+(quantityordered-avg)/sttdev as Z_score
+from cte
+where abs((quantityordered-avg)/sttdev)>3,
+)
+--cách 1:
+Update sales_dataset_rfm_prj
+Set quantityordered= (select avg(quantityordered)
+from sales_dataset_rfm_prj)
+where quantityordered in (select quantityordered from twt_outlier)>3
 
+
+--cách 2:	
 Delete from sales_dataset_rfm_prj
 where user in (Select * from sales_dataset_rfm_prj
 where quantityordered < (select min_value from twt_outlier)
