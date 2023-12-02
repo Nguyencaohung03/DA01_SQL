@@ -61,13 +61,35 @@ SET CONTACTFIRSTNAME = INITCAP(SUBSTRING(CONTACTFULLNAME
 WHERE CONTACTFULLNAME IS NOT NULL AND POSITION('-' IN CONTACTFULLNAME) > 0
 --5.Thêm cột QTR_ID, MONTH_ID, YEAR_ID lần lượt là Qúy, tháng, năm được lấy ra từ ORDERDATE 
 Alter table sales_dataset_rfm_prj
-Add column qtr_id date;
+Add column qtr_id int;
 
 Alter table sales_dataset_rfm_prj
-Add column month_id date;
+Add column month_id int;
 
 Alter table sales_dataset_rfm_prj
-Add column year_id date;
+Add column year_id int;
 
+Update sales_dataset_rfm_prj 
+Set month_id = extract(month from orderdate); 
 
+Update sales_dataset_rfm_prj 
+Set year_id = extract(year from orderdate); 
+
+Update sales_dataset_rfm_prj
+SET qtr_id = (
+case
+when month_id in (1,2,3)  then 1
+when month_id in (4,5,6)  then 2
+when month_id in (7,8,9)  then 3
+when month_id in (10,11,12)  then 4
+end
+)
 --6.Hãy tìm outlier (nếu có) cho cột QUANTITYORDERED và hãy chọn cách xử lý cho bản ghi đó (2 cách) ( Không chạy câu lệnh trước khi bài được review)
+
+
+
+
+
+
+
+
