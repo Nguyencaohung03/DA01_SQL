@@ -20,8 +20,6 @@ ALTER TABLE sales_dataset_rfm_prj
 ALTER TABLE sales_dataset_rfm_prj
  ALTER COLUMN msrp TYPE numeric USING (TRIM(msrp):: numeric);
 
-ALTER TABLE sales_dataset_rfm_prj
- ALTER COLUMN phone TYPE numeric USING (TRIM(phone):: numeric);
 --2.Check NULL/BLANK (‘’)  ở các trường: ORDERNUMBER, QUANTITYORDERED, PRICEEACH, ORDERLINENUMBER, SALES, ORDERDATE.
 Select ordernumber
 from public.sales_dataset_rfm_prj
