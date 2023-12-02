@@ -46,10 +46,28 @@ where sales is null;
 Select orderdate
 from public.sales_dataset_rfm_prj
 where orderdate is null;
---3.Thêm cột CONTACTLASTNAME, CONTACTFIRSTNAME được tách ra từ CONTACTFULLNAME . 
+--3.Thêm cột CONTACTLASTNAME, CONTACTFIRSTNAME được tách ra từ CONTACTFULLNAME .
+Alter table sales_dataset_rfm_prj
+Add column contactfirstname varchar;
 
+Alter table sales_dataset_rfm_prj
+Add column contactlastname varchar;
 --4.Chuẩn hóa CONTACTLASTNAME, CONTACTFIRSTNAME theo định dạng chữ cái đầu tiên viết hoa, chữ cái tiếp theo viết thường. 
-
+UPDATE sales_dataset_rfm_prj
+SET CONTACTFIRSTNAME = INITCAP(SUBSTRING(CONTACTFULLNAME 
+						FROM 1 FOR POSITION('-' IN CONTACTFULLNAME) - 1)),
+    CONTACTLASTNAME = INITCAP(SUBSTRING(CONTACTFULLNAME 
+						FROM POSITION('-' IN CONTACTFULLNAME) + 1))
+WHERE CONTACTFULLNAME IS NOT NULL AND POSITION('-' IN CONTACTFULLNAME) > 0
 --5.Thêm cột QTR_ID, MONTH_ID, YEAR_ID lần lượt là Qúy, tháng, năm được lấy ra từ ORDERDATE 
+Alter table sales_dataset_rfm_prj
+Add column qtr_id date;
+
+Alter table sales_dataset_rfm_prj
+Add column month_id date;
+
+Alter table sales_dataset_rfm_prj
+Add column year_id date;
+
 
 --6.Hãy tìm outlier (nếu có) cho cột QUANTITYORDERED và hãy chọn cách xử lý cho bản ghi đó (2 cách) ( Không chạy câu lệnh trước khi bài được review)
