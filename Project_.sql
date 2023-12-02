@@ -85,8 +85,27 @@ when month_id in (10,11,12)  then 4
 end
 )
 --6.Hãy tìm outlier (nếu có) cho cột QUANTITYORDERED và hãy chọn cách xử lý cho bản ghi đó (2 cách) ( Không chạy câu lệnh trước khi bài được review)
+With twt_outlier as
+(
+Select Q1-1.5*IQR as min_value,
+   Q3+1.5*IQR as max_value
+from
+(select
+percentile_cont(0.25) within group (order by quantityordered)as Q1,
+percentile_cont(0.75) within group (order by quantityordered)as Q3,
+percentile_cont(0.75) within group (order by quantityordered)
+	-percentile_cont(0.25) within group (order by quantityordered)as IQR
+from sales_dataset_rfm_prj)as a
+)
+Select * from sales_dataset_rfm_prj
+where quantityordered < (select min_value from twt_outlier)
+or quantityordered > (select max_value from twt_outlier)
 
 
+Delete from sales_dataset_rfm_prj
+where user in (Select * from sales_dataset_rfm_prj
+where quantityordered < (select min_value from twt_outlier)
+or quantityordered > (select max_value from twt_outlier))
 
 
 
