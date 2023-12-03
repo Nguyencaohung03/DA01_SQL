@@ -81,12 +81,12 @@ group by FORMAT_DATE('%Y-%m-%d', a.sold_at),a.product_category
 
 
 --COHORT
-Create Or replace View vw_ecommerce_analyst as
+with vw_ecommerce_analyst as
 (
 select  
-extract(month from a.created_at) as month,
+FORMAT_DATE('%Y-%m', a.created_at) as month,
 extract(year from a.created_at) as year,
-c.product_category,
+c.product_category as product_category ,
 Round(sum(b.sale_price),2) as TPV,
 Round(sum(d.cost),2) as Total_cost,
 count(b.order_id) as TPO,
@@ -99,7 +99,14 @@ join bigquery-public-data.thelook_ecommerce.inventory_items as c
   on b.product_id=c.product_id
 join bigquery-public-data.thelook_ecommerce.products as d
   on b.product_id=d.id
-group by extract(month from a.created_at),extract(year from a.created_at), c.product_category)
+group by FORMAT_DATE('%Y-%m', a.created_at),extract(year from a.created_at), c.product_category)
+
+select *,
+Round((TPV - LAG (TPV) OVER (ORDER BY month ASC))/LAG (TPV) OVER (ORDER BY month ASC)*100,2) AS  
+revenue_growth,
+Round((TPO - LAG (TPO) OVER (ORDER BY month ASC))/LAG (TPO) OVER (ORDER BY month ASC)*100,2) AS  
+order_growth
+from vw_ecommerce_analyst  
 
 
 
