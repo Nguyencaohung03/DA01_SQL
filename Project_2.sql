@@ -1,10 +1,10 @@
 --Số lượng đơn hàng và số lượng khách hàng mỗi tháng
 select
 FORMAT_DATE('%Y-%m', created_at) as month_year,
-sum(user_id) as total_user, 
+count(user_id) as total_user, 
 sum(order_id) as total_order 
 from bigquery-public-data.thelook_ecommerce.orders
-where FORMAT_DATE('%Y-%m', created_at) < '2022-05'
+WHERE DATE(created_at) In ('2019-01-01', '2022-04-30')
 group by FORMAT_DATE('%Y-%m', created_at)
 order  by 1
    --Insight: xu hướng khách hàng và số lượng đơn hàng có xu hướng tăng theo thời gian, tăng nhiều nhất những tháng đầu năm
@@ -15,7 +15,7 @@ a.user_id as distinct_users,
 Round(sum(b.sale_price)/count(a.order_id),2) as average_order_value
 from bigquery-public-data.thelook_ecommerce.orders a
 join bigquery-public-data.thelook_ecommerce.order_items b on a.user_id=b.user_id
-where FORMAT_DATE('%Y-%m', a.created_at) < '2022-05'
+WHERE DATE(created_at) In ('2019-01-01', '2022-04-30')
 group by a.user_id, FORMAT_DATE('%Y-%m', a.created_at)
 order  by 1
    --Insight: Giá trị đơn hàng biến động không đều theo từng khách hàng mỗi tháng
