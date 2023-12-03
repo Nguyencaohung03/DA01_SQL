@@ -80,6 +80,27 @@ where FORMAT_DATE('%Y-%m-%d', a.sold_at) BETWEEN '2022-04-15' AND '2022-07-15'
 group by FORMAT_DATE('%Y-%m-%d', a.sold_at),a.product_category
 
 
+--COHORT
+Create Or replace View vw_ecommerce_analyst as
+(
+select  
+extract(month from a.created_at) as month,
+extract(year from a.created_at) as year,
+c.product_category,
+Round(sum(b.sale_price),2) as TPV,
+Round(sum(d.cost),2) as Total_cost,
+count(b.order_id) as TPO,
+Round(Round(sum(b.sale_price),2)- Round(sum(d.cost),2),2) as Total_profit,
+Round(Round(sum(b.sale_price),2)/ Round(sum(d.cost),2),2) as Profit_to_cost_ratio
+from bigquery-public-data.thelook_ecommerce.orders as a
+join bigquery-public-data.thelook_ecommerce.order_items as b
+  on a.order_id=b.order_id
+join bigquery-public-data.thelook_ecommerce.inventory_items as c
+  on b.product_id=c.product_id
+join bigquery-public-data.thelook_ecommerce.products as d
+  on b.product_id=d.id
+group by extract(month from a.created_at),extract(year from a.created_at), c.product_category)
+
 
 
 
