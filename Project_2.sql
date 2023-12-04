@@ -102,10 +102,10 @@ join bigquery-public-data.thelook_ecommerce.products as d
 group by FORMAT_DATE('%Y-%m', a.created_at),extract(year from a.created_at), c.product_category)
 
 select *,
-Round((TPV - LAG (TPV) OVER (ORDER BY month ASC))/LAG (TPV) OVER (ORDER BY month ASC)*100,2) AS  
-revenue_growth,
-Round((TPO - LAG (TPO) OVER (ORDER BY month ASC))/LAG (TPO) OVER (ORDER BY month ASC)*100,2) AS  
-order_growth
+Round((TPV - LAG (TPV) OVER(partition by product_category ORDER BY month ASC))/LAG (TPV) OVER(partition by product_category 
+   ORDER BY month ASC)*100,2) AS revenue_growth,
+Round((TPO - LAG (TPO) OVER(partition by product_category ORDER BY month ASC))/LAG (TPO) OVER(partition by product_category 
+   ORDER BY month ASC)*100,2) AS order_growth
 from vw_ecommerce_analyst  
 
 
