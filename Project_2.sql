@@ -108,6 +108,58 @@ Round((TPO - LAG (TPO) OVER(partition by product_category ORDER BY month ASC))/L
    ORDER BY month ASC)*100,2) AS order_growth
 from vw_ecommerce_analyst  
 
+--tạo 3 bảng cohort
+with twt_index as
+(
+select 
+user_id, sale_price,
+Format_Date('%Y-%m',first_purchase_date) as cohort_date,
+Format_date('%Y-%m', created_at) as created_at,
+(extract(year from created_at)-extract(year from first_purchase_date))*12 
+  +(extract(month from created_at)-extract(month from first_purchase_date)) +1 as index
+from 
+(select user_id, sale_price, 
+min(created_at)over(partition by user_id) as first_purchase_date,
+created_at 
+from bigquery-public-data.thelook_ecommerce.order_items)
+)
+, cte as 
+(
+select 
+cohort_date, index, 
+count(distinct user_id) as cnt,
+Round(sum(sale_price),2) as revenue
+from twt_index
+group by cohort_date, index 
+)
+--customer_cohort
+, customer_cohort as
+(select 
+cohort_date,
+sum(case when index =1 then cnt else 0 end) as m1,
+sum(case when index =2 then cnt else 0 end) as m2,
+sum(case when index =3 then cnt else 0 end) as m3,
+sum(case when index =4 then cnt else 0 end) as m4
+from cte
+group by cohort_date 
+order by cohort_date )
+-- retention_cohort
+,retention_cohort as
+(select 
+cohort_date,
+Round(100.00* m1/m1,2) || '%' as m1,
+Round(100.00* m2/m1,2) || '%' as m1,
+Round(100.00* m3/m1,2) || '%' as m1,
+Round(100.00* m4/m1,2) || '%' as m1
+from customer_cohort)
+--churn_cohort
+select 
+cohort_date,
+(100-Round(100.00* m1/m1,2))|| '%' as m1,
+(100-Round(100.00* m2/m1,2))|| '%' as m1,
+(100-Round(100.00* m3/m1,2)) || '%' as m1,
+(100-Round(100.00* m4/m1,2)) || '%' as m1
+from customer_cohort
 
 
 
