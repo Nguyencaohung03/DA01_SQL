@@ -94,7 +94,17 @@ select Department, Employee, Salary
 from cte2
     --đề yều cầu sắp xếp theo id nhưng e 'order by id' thì bị lỗi, anh check cho e nhé
 --ex7
-
+select person_name
+from
+(
+select 
+turn as Turn, person_name,
+sum(weight)over(order by turn) as Total_Weight
+from Queue
+) a
+where Total_Weight <=1000
+order by Total_Weight DESC
+limit 1
 --ex8
 with cte1 as
 (select 
