@@ -39,3 +39,10 @@ order by earnings desc
 limit 1
 
 
+select a.customer_name, Round(sum(b.total_price),6)
+from customer a
+  join invoice b on a.id = b.customer_id
+group by a.customer_name
+having Round(sum(b.total_price),6) <= (select Round(avg(total_price)*0.25,6)
+from invoice)
+order by Round(sum(b.total_price),6) DESC
