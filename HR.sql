@@ -46,3 +46,10 @@ group by a.customer_name
 having Round(sum(b.total_price),6) <= (select Round(avg(total_price)*0.25,6)
 from invoice)
 order by Round(sum(b.total_price),6) DESC
+
+
+--The PADs
+SELECT CONCAT(NAME,CONCAT(CONCAT('(',left(OCCUPATION,1)),')')) FROM OCCUPATIONS ORDER BY NAME;
+
+SELECT CONCAT(CONCAT(CONCAT(CONCAT('There are a total of',CONCAT(' ',COUNT(OCCUPATION))),' '),LOWER(OCCUPATION)),'s.') 
+  FROM OCCUPATIONS GROUP BY OCCUPATION ORDER BY COUNT(OCCUPATION),OCCUPATION;
