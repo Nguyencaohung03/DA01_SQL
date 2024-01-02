@@ -49,7 +49,34 @@ order by Round(sum(b.total_price),6) DESC
 
 
 --The PADs
-SELECT CONCAT(NAME,CONCAT(CONCAT('(',left(OCCUPATION,1)),')')) FROM OCCUPATIONS ORDER BY NAME;
+SELECT CONCAT(NAME,'(',left(OCCUPATION,1),')') FROM OCCUPATIONS ORDER BY NAME;
 
-SELECT CONCAT(CONCAT(CONCAT(CONCAT('There are a total of',CONCAT(' ',COUNT(OCCUPATION))),' '),LOWER(OCCUPATION)),'s.') 
+SELECT CONCAT('There are a total of', ' ', COUNT(OCCUPATION),' ' ,LOWER(OCCUPATION),'s.') 
   FROM OCCUPATIONS GROUP BY OCCUPATION ORDER BY COUNT(OCCUPATION),OCCUPATION;
+
+--
+with cte as (
+(select occupation from OCCUPATIONS) Union all
+(Select 
+ CONCAT('There are a total of', ' ',
+        sum(case when occupation = 'Actor' then 1   
+                   else 0 end) ,' ','actors.') from OCCUPATIONS) 
+Union all                 
+(Select CONCAT('There are a total of', ' ',
+        sum(case when occupation = 'doctor' then 1   
+                   else 0 end) ,' ','doctors.') from OCCUPATIONS)
+Union all                 
+(Select CONCAT('There are a total of', ' ',
+        sum(case when occupation = 'singer' then 1   
+                   else 0 end) ,' ','singers.')from OCCUPATIONS)
+Union all                 
+(Select CONCAT('There are a total of', ' ',
+        sum(case when occupation = 'professor' then 1   
+                   else 0 end) ,' ','professors.') from OCCUPATIONS)
+)
+(Select CONCAT(NAME,'(',left(OCCUPATION,1),')') 
+from OCCUPATIONS order by NAME)
+Union all
+(select * from cte 
+group by OCCUPATION 
+order by COUNT(OCCUPATION),OCCUPATION )
