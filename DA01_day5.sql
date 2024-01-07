@@ -18,6 +18,7 @@ FROM candidates
 where skill in ('Python', 'Tableau', 'PostgreSQL')
 group by candidate_id
 having COUNT(skill) =3 
+order by candidate_id
 --ex6
 SELECT user_id,
 DATE(MAX(post_date)) - Date(MIN(post_date)) AS days_between
