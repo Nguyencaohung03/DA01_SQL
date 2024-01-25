@@ -28,6 +28,7 @@ FROM activities as a
 JOIN age_breakdown as b
 ON a.user_id = b.user_id
 GROUP BY age_bucket
+
 --ex4
 SELECT a.customer_id
 FROM customer_contracts as a
