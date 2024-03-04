@@ -1,13 +1,46 @@
---Write a query to return information on the tables in the database.
---write and run another query that returns the first five rows of the facts table in the database.
+--Overview of the Data
 SELECT * FROM facts
 LIMIT 5
--- Write a single query that returns the following:
---Minimum population
+--Summary Statistics
+select 
+min(population),
+max(population),
+min(population_growth),
+max(population_growth)
+* from facts
+--Exploring Outliers
+select 
+name, min(population)
+from facts
+where population = (select min(population) from facts);
 
---Maximum population
+select 
+name, max(population)
+from facts
+where population = (select max(population) from facts)
+/* It seems like the table contains a row for the whole world, which explains the population of over 7.2 billion. 
+It also seems like the table contains a row for Antarctica, which explains the population of 0. 
+This seems to match the CIA Factbook page for Antarctica */
+--Exploring Average Population and Area
+delete from facts
+where name = 'World';
 
---Minimum population growth
+select 
+min(population),
+max(population),
+min(population_growth),
+max(population_growth)
+* from facts;
 
---Maximum population growth 
+select 
+avg(population), avg(area)
+from facts;
+--Finding Densely Populated Countries
+delete from facts
+where name = 'World';
+
+select name
+from facts
+where population > (select avg(population) from facts)
+and area < (select avg(area) from facts)
 
