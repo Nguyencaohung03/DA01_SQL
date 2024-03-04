@@ -43,4 +43,7 @@ select name
 from facts
 where population > (select avg(population) from facts)
 and area < (select avg(area) from facts)
-
+-- Which countries have a higher birth rate than  death rate?
+select name, birth_rate, death_rate
+from facts
+WHERE birth_rate > death_rate
