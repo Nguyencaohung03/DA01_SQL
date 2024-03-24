@@ -1,11 +1,21 @@
-with Superusers as (
-SELECT user_id, count(*) as transactioncount
-FROM USERS
-group by user_id
-having transactioncount >= 2
+WITH UserTransactions as (
+SELECT user_id,
+	transaction_date,
+    ROW_NUMBER() OVER (PARTITION BY User_id ORDER BY Transaction_date) as TransactionRank
+FROM users
+),
+SuperUsers as(
+SELECT user_id,
+    transaction_date
+FROM UserTransactions
+WHERE user_id IN (SELECT user_id
+       			  FROM UserTransactions
+        		  GROUP BY user_id
+        		  HAVING COUNT(*) >= 2)
+AND TransactionRank = 2
 )
-select u.user_id, 
-MAX(u.transaction_date) as Date_Became_Super_User
-from USERS as u 
-Join Superusers as s on u.USER_ID = s.user_id
-group by u.user_id
+SELECT u.user_id, s.transaction_date
+FROM users as u
+LEFT JOIN SuperUsers as s on u.user_id= s.user_id
+GROUP BY u.user_id, s.transaction_date
+ORDER BY u.user_id
