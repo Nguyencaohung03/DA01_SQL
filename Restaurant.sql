@@ -21,3 +21,19 @@ join menu as m on s.product_id= m.product_id
 group by s.customer_id, s.order_date, m.product_name
 )
 Where row_num =1 
+--Món nào được mua nhiều nhất và được mua bao nhiêu lần
+select m.product_name,
+count(distinct s.order_date) as count_order
+from menu as m
+join sales as s on m.product_id = s.product_id
+group by m.product_name
+order by count_order DESC
+--Món nào được khách hàng mua đầu tiên sau khi trở thành thành viên
+select e.customer_id , e.join_date,
+m.product_name
+from members as e
+Left join sales as s on e.customer_id= s.customer_id
+Left join menu as m on s.product_id= m.product_id
+group by e.customer_id , e.join_date
+--Món nào được khách hàng mua ngay trước khi trở thành thành viên
+
