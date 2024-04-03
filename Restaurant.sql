@@ -29,11 +29,23 @@ join sales as s on m.product_id = s.product_id
 group by m.product_name
 order by count_order DESC
 --Món nào được khách hàng mua đầu tiên sau khi trở thành thành viên
-select e.customer_id , e.join_date,
+select s.customer_id ,MIN(s.order_date) as first_order_date,
 m.product_name
-from members as e
-Left join sales as s on e.customer_id= s.customer_id
-Left join menu as m on s.product_id= m.product_id
-group by e.customer_id , e.join_date
+from sales as s
+join menu as m on s.product_id= m.product_id
+join members as e on s.customer_id= e.customer_id
+group by s.customer_id, m.product_name
+having s.order_date >= e.join_date
 --Món nào được khách hàng mua ngay trước khi trở thành thành viên
-
+DENSE_RANK() OVER (PARTITION BY s.customer_id Order by s.order_date DESC) as dense_rank,
+m.product_name
+from sales as s
+join menu as m on s.product_id= m.product_id
+join members as e on s.customer_id= e.customer_id
+group by s.customer_id, m.product_name
+Having s.order_date < e.join_date
+order by s.customer_id
+)
+Select customer_id, order_date, product_name
+from previous_sales
+where dense_rank = 1
